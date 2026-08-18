@@ -109,13 +109,13 @@ impl Scanner{
             }else { 
                 self.add_token(TokenType::bang)
             },
-            '/' => self.add_token(TokenType::Operation::division()),
+            '/' => self.add_token(TokenType::Operation::division),
             '=' => self.add_token(TokenType::equal),
-            '*' => self.add_token(TokenType::Operation::multiplication()),
+            '*' => self.add_token(TokenType::Operation::multiplication),
             '.' => self.add_token(TokenType::point),
             ',' => self.add_token(TokenType::comma),
-            '+' => self.add_token(TokenType::Operation::adition()),
-            '-' => self.add_token(TokenType::Operation::subtration()),
+            '+' => self.add_token(TokenType::Operation::adition),
+            '-' => self.add_token(TokenType::Operation::subtration),
             ':' => self.add_token(TokenType::collon),
             ';' => self.add_token(TokenType::semicolon),
             '>' => if self.peek() == '='{
