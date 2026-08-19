@@ -154,6 +154,7 @@ impl Scanner{
     fn advance(&mut self) -> char{
         let character = self.source[self.current];
         self.current += 1;
+        self.line_current += 1;
         character
 
     }
@@ -162,6 +163,7 @@ impl Scanner{
         if self.end_reached(){
             '\0'
         }else {
+            
             self.source[self.current]
         }
     }
