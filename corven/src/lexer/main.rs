@@ -29,11 +29,11 @@ enum TokenType {
     num_literal,
     bool,
     identifier,
-    Operation,
+    operation(Operation),
     eof
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug,Clone,Copy,PartialEq)]
 enum Operation{
     adition,
     subtration,
@@ -47,6 +47,7 @@ struct Token{
     r#type: TokenType,
     lexemme: String,
     line: usize,
+    column: usize
 }
 
 
@@ -55,7 +56,9 @@ struct Scanner {
     source: Vec<char>,
     start: usize,
     current: usize,
+    line_current: usize,
     line: usize,
+    column:usize,
     tokens: Vec<Token>
 
 }
@@ -66,7 +69,9 @@ impl Scanner{
             source: source.chars().collect(),
             start: 0,
             current: 0,
+            line_current: 1,
             line:1,
+            column:1,
             tokens: Vec::new()
         }
     }
@@ -82,17 +87,19 @@ impl Scanner{
         self.tokens.push(Token{
              r#type:TokenType::eof,
              lexemme: String::new(),
-             line: self.line
+             line: self.line,
+             column: 1
         });
         &self.tokens
     }
 
     fn add_token(&mut self,tokentype:TokenType)  {
-        let token = self.source[self.start..self.current].iter().collect();
+        let token:String = self.source[self.start..self.current].iter().collect();
         self.tokens.push( Token{
             r#type:tokentype,
-            lexemme:token,
-            line: self.line
+            lexemme:token.clone(),
+            line: self.line,
+            column: self.line_current - token.len()
             }
         );
         }
@@ -109,13 +116,13 @@ impl Scanner{
             }else { 
                 self.add_token(TokenType::bang)
             },
-            '/' => self.add_token(TokenType::Operation::division),
+            '/' => self.add_token(TokenType::operation(Operation::division)),
             '=' => self.add_token(TokenType::equal),
-            '*' => self.add_token(TokenType::Operation::multiplication),
+            '*' => self.add_token(TokenType::operation(Operation::multiplication)),
             '.' => self.add_token(TokenType::point),
             ',' => self.add_token(TokenType::comma),
-            '+' => self.add_token(TokenType::Operation::adition),
-            '-' => self.add_token(TokenType::Operation::subtration),
+            '+' => self.add_token(TokenType::operation(Operation::adition)),
+            '-' => self.add_token(TokenType::operation(Operation::subtration)),
             ':' => self.add_token(TokenType::collon),
             ';' => self.add_token(TokenType::semicolon),
             '>' => if self.peek() == '='{
@@ -132,7 +139,10 @@ impl Scanner{
             },
             '\r'|' '|'\t' => {},
             '"' => self.string(),
-            '\n'=> self.line +=1,
+            '\n'=> {
+                self.line +=1;
+                self.line_current =1;
+            },
              _ =>  if character.is_ascii_digit(){
                     self.number()
              }else if character.is_alphabetic(){
@@ -226,7 +236,8 @@ fn main(){
     bool = true
     bool compa/ring = 9.4 >= 0;
     let first = 8 > 8;
-    7!= 0
+    7!= 0;
+    8+9/7*2-6;
 
 
         " ;
@@ -234,6 +245,6 @@ fn main(){
     let mut  scanner = Scanner::new(sample);
     let tokens = scanner.scan_tokens();
     for token in tokens{
-        println!("{:?} '{}' (linha {})",token.r#type,token.lexemme,token.line);
+        println!("{:?} '{}' (linha {}) (coluna {})",token.r#type,token.lexemme,token.line,token.column);
     }
 }
