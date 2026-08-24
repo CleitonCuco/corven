@@ -1,6 +1,6 @@
 
 #[derive(Debug,Clone,Copy,PartialEq)]
-enum TokenType {
+pub enum TokenType {
     collon,
     equal,
     greater_than,
@@ -34,7 +34,7 @@ enum TokenType {
 }
 
 #[derive(Debug,Clone,Copy,PartialEq)]
-enum Operation{
+pub enum Operation{
     adition,
     subtration,
     division,
@@ -43,7 +43,7 @@ enum Operation{
 }
 
 #[derive(Debug,Clone)]
-struct Token{
+pub struct Token{
     r#type: TokenType,
     lexemme: String,
     line: usize,
@@ -52,7 +52,7 @@ struct Token{
 
 
 #[derive(Debug)]
-struct Scanner {
+pub struct Scanner {
     source: Vec<char>,
     start: usize,
     current: usize,
@@ -64,7 +64,7 @@ struct Scanner {
 }
 
 impl Scanner{
-    fn new(source: &str) -> Self {
+    pub fn new(source: &str) -> Self {
         Scanner{
             source: source.chars().collect(),
             start: 0,
@@ -78,7 +78,7 @@ impl Scanner{
 
     
     
-    fn scan_tokens(&mut self) -> &Vec<Token> {
+    pub fn scan_tokens(&mut self) -> &Vec<Token> {
         while !self.end_reached(){
             self.start = self.current;
             self.scan_token();
@@ -93,7 +93,7 @@ impl Scanner{
         &self.tokens
     }
 
-    fn add_token(&mut self,tokentype:TokenType)  {
+    pub fn add_token(&mut self,tokentype:TokenType)  {
         let token:String = self.source[self.start..self.current].iter().collect();
         self.tokens.push( Token{
             r#type:tokentype,
@@ -104,7 +104,7 @@ impl Scanner{
         );
         }
 
-    fn scan_token(&mut self){
+    pub fn scan_token(&mut self){
         let character = self.advance();
 
         match character {
@@ -151,7 +151,7 @@ impl Scanner{
         }
     }
 
-    fn advance(&mut self) -> char{
+    pub fn advance(&mut self) -> char{
         let character = self.source[self.current];
         self.current += 1;
         self.line_current += 1;
@@ -159,7 +159,7 @@ impl Scanner{
 
     }
 
-    fn peek(&self) -> char{
+    pub fn peek(&self) -> char{
         if self.end_reached(){
             '\0'
         }else {
@@ -168,7 +168,7 @@ impl Scanner{
         }
     }
 
-    fn peek_ahead(&self) -> char{
+    pub fn peek_ahead(&self) -> char{
         if self.end_reached(){
             '\0'
         }else{
@@ -176,7 +176,7 @@ impl Scanner{
         }
     }
 
-    fn number(&mut self){
+    pub fn number(&mut self){
         
         while self.peek().is_ascii_digit(){
 
@@ -194,7 +194,7 @@ impl Scanner{
         self.add_token(TokenType::num_literal);
     }
 
-    fn string(&mut self){
+    pub fn string(&mut self){
         self.advance();
         while self.peek() != '"'  && !self.end_reached(){
             self.advance();
@@ -204,7 +204,7 @@ impl Scanner{
         
     }
 
-    fn identifier(&mut self){
+    pub fn identifier(&mut self){
         while self.peek().is_alphanumeric(){
             self.advance();
         }
@@ -223,7 +223,7 @@ impl Scanner{
     }
     
 
-    fn end_reached(&self) -> bool {
+    pub fn end_reached(&self) -> bool {
         self.current >= self.source.len()
     }
 
