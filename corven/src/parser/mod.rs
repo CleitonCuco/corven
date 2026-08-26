@@ -1,95 +1,88 @@
+use crate::lexer::{Scanner, TokenType, Token, Operation};
 
-use crate::lexer::{Scanner,TokenType,Token,Operation};
-
-
-
-#[derive(Debug,Clone,PartialEq)]
-pub struct Expression{
+#[derive(Debug, Clone, PartialEq)]
+pub enum Expression {
     Literal(f64),
-    Unary(TokenType,Box<Expression>),
-    Binary(Box<Expression>,TokenType,Box<Expression>)
+    Unary(TokenType, Box<Expression>),
+    Binary(Box<Expression>, TokenType, Box<Expression>),
 }
 
-#[derive(Debug,Clone,PartialEq)]
-pub struct Parser{
+#[derive(Debug, Clone, PartialEq)]
+pub struct Parser {
     tokens: Vec<Token>,
-    current: usize
+    current: usize,
 }
 
-
-
-pub impl Parser{
-    pub fn new(&self,tokens:Vec<Token>) -> Self{
-        Parser{
-            tokens
-            current:0
-        }
+impl Parser {
+    pub fn new(tokens: Vec<Token>) -> Self {
+        Parser { tokens, current: 0 }
     }
 
-    pub fn parse(&self) -> Expression{
-        sum()
+    pub fn parse(&mut self) -> Expression {
+        self.sum()
     }
 
-    pub fn sum() -> Expression{
-        let left =  self.multiplication();
-
-        while self.peek_type == TokenType::operation(Operation::adition) || self.peek_type == TokenType::operation(Operation::subtration){
+    pub fn sum(&mut self) -> Expression {
+        let mut left = self.multiplication();
+        while self.peek_type() == TokenType::operation(Operation::adition)
+            || self.peek_type() == TokenType::operation(Operation::subtration)
+        {
             let operator = self.advance().r#type;
             let right = self.multiplication();
-
-            left = Expression {
-                Binary(left,operator,right)
-            };
-
-            left
-
-
+            left = Expression::Binary(Box::new(left), operator, Box::new(right));
         }
-
-
-
-    }
-    
-    pub fn multiplication(&self) -> Expression{
-        let left = self.unary()
-
-        while self.peek_type() == TokenType::operation(Operation::multiplication) || self.peek_type() == TokenType::operation(Operation::division) {
-            let operator = self.advance().r#type;
-            let right = self.unary();
-
-            left = Expression::Binary(left,operator,right)
-
-        } 
-
         left
     }
 
-    pub fn literal_value(&self) -> Expression {
-
-        todo!();
-
+    pub fn multiplication(&mut self) -> Expression {
+        let mut left = self.unary();
+        while self.peek_type() == TokenType::operation(Operation::multiplication)
+            || self.peek_type() == TokenType::operation(Operation::division)
+        {
+            let operator = self.advance().r#type;
+            let right = self.unary();
+            left = Expression::Binary(Box::new(left), operator, Box::new(right));
+        }
+        left
     }
 
-    pub fn look_ahead(){
-        todo!();
+    pub fn unary(&mut self) -> Expression {
+        if self.peek_type() == TokenType::operation(Operation::subtration) {
+            self.advance();
+            let expr = self.unary();
+            return Expression::Unary(TokenType::operation(Operation::subtration), Box::new(expr));
+        }
+        self.primary()
+    }
+
+    pub fn primary(&mut self) -> Expression {
+        let t = self.advance();
+        match t.r#type {
+            TokenType::num_literal => Expression::Literal(t.lexemme.parse::<f64>().unwrap()),
+            TokenType::opening_bracket => {
+                let expr = self.sum();
+                if self.peek_type() != TokenType::closing_bracket {
+                    panic!("Exception: expected ')' but found {:?}", self.peek_type());
+                }
+                self.advance();
+                expr
+            }
+            _ => panic!("Exception: was waiting for a number or an '(' but found {:?}", t.r#type),
+        }
     }
 
     pub fn peek_type(&self) -> TokenType {
         self.tokens[self.current].clone().r#type
     }
 
-    pub fn advance(&self) -> Token{
-            
+    pub fn advance(&mut self) -> Token {
         let t = self.tokens[self.current].clone();
         self.current += 1;
         t
-
     }
-
 }
 
 
-fn main(){  
-    
+fn main(){
     println!("corven language parser!");
 }

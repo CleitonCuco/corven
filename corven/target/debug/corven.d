@@ -1,0 +1,1 @@
+/home/cleiton/coding/projects/language/corven/target/debug/corven: /home/cleiton/coding/projects/language/corven/src/ast/mod.rs /home/cleiton/coding/projects/language/corven/src/lexer/mod.rs /home/cleiton/coding/projects/language/corven/src/main.rs /home/cleiton/coding/projects/language/corven/src/parser/mod.rs
