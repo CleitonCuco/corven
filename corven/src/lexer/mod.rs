@@ -44,10 +44,10 @@ pub enum Operation{
 
 #[derive(Debug,Clone)]
 pub struct Token{
-    r#type: TokenType,
-    lexemme: String,
-    line: usize,
-    column: usize
+   pub r#type: TokenType,
+    pub lexemme: String,
+   pub  line: usize,
+    pub column: usize
 }
 
 
