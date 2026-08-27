@@ -19,7 +19,14 @@ impl Parser {
     }
 
     pub fn parse(&mut self) -> Expression {
-        self.sum()
+        
+        let expr = self.sum();
+    if self.peek_type() != TokenType::eof {
+        panic!("Exception: unexpected token after expression: {:?}", self.peek_type());
+    }
+    expr
+
+
     }
 
     pub fn sum(&mut self) -> Expression {
