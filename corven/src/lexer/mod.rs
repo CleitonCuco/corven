@@ -16,8 +16,6 @@ pub enum TokenType {
     r#true,
     r#false,
     point,
-    slash,
-    star,
     bang,
     bang_equal,
     r#while,
@@ -29,16 +27,16 @@ pub enum TokenType {
     num_literal,
     bool,
     identifier,
-    operation(Operation),
+    operator(Operator),
     eof
 }
 
 #[derive(Debug,Clone,Copy,PartialEq)]
-pub enum Operation{
-    adition,
-    subtration,
-    division,
-    multiplication
+pub enum Operator{
+    minus,
+    plus,
+    slash,
+    star
 
 }
 
@@ -116,13 +114,13 @@ impl Scanner{
             }else { 
                 self.add_token(TokenType::bang)
             },
-            '/' => self.add_token(TokenType::operation(Operation::division)),
+            '/' => self.add_token(TokenType::operator(Operator::slash)),
             '=' => self.add_token(TokenType::equal),
-            '*' => self.add_token(TokenType::operation(Operation::multiplication)),
+            '*' => self.add_token(TokenType::operator(Operator::star)),
             '.' => self.add_token(TokenType::point),
             ',' => self.add_token(TokenType::comma),
-            '+' => self.add_token(TokenType::operation(Operation::adition)),
-            '-' => self.add_token(TokenType::operation(Operation::subtration)),
+            '+' => self.add_token(TokenType::operator(Operator::plus)),
+            '-' => self.add_token(TokenType::operator(Operator::minus)),
             ':' => self.add_token(TokenType::collon),
             ';' => self.add_token(TokenType::semicolon),
             '>' => if self.peek() == '='{
@@ -230,23 +228,5 @@ impl Scanner{
 }
 
 fn main(){
-    let sample = "let x = 9;
-    let y = 7.9,z=0.8()
-
-
-    string = \"ola\" 
-    bool = true
-    bool compa/ring = 9.4 >= 0;
-    let first = 8 > 8;
-    7!= 0;
-    8+9/7*2-6;
-
-
-        " ;
-    println!("corven language lexer");
-    let mut  scanner = Scanner::new(sample);
-    let tokens = scanner.scan_tokens();
-    for token in tokens{
-        println!("{:?} '{}' (linha {}) (coluna {})",token.r#type,token.lexemme,token.line,token.column);
-    }
+    todo!();
 }

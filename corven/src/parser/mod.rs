@@ -1,4 +1,4 @@
-use crate::lexer::{Scanner, TokenType, Token, Operation};
+use crate::lexer::{Scanner, TokenType, Token, Operator};
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Expression {
@@ -31,8 +31,8 @@ impl Parser {
 
     pub fn sum(&mut self) -> Expression {
         let mut left = self.multiplication();
-        while self.peek_type() == TokenType::operation(Operation::adition)
-            || self.peek_type() == TokenType::operation(Operation::subtration)
+        while self.peek_type() == TokenType::operator(Operator::plus)
+            || self.peek_type() == TokenType::operator(Operator::minus)
         {
             let operator = self.advance().r#type;
             let right = self.multiplication();
@@ -43,8 +43,8 @@ impl Parser {
 
     pub fn multiplication(&mut self) -> Expression {
         let mut left = self.unary();
-        while self.peek_type() == TokenType::operation(Operation::multiplication)
-            || self.peek_type() == TokenType::operation(Operation::division)
+        while self.peek_type() == TokenType::operator(Operator::star)
+            || self.peek_type() == TokenType::operator(Operator::slash)
         {
             let operator = self.advance().r#type;
             let right = self.unary();
@@ -54,10 +54,10 @@ impl Parser {
     }
 
     pub fn unary(&mut self) -> Expression {
-        if self.peek_type() == TokenType::operation(Operation::subtration) {
+        if self.peek_type() == TokenType::operator(Operator::minus) {
             self.advance();
             let expr = self.unary();
-            return Expression::Unary(TokenType::operation(Operation::subtration), Box::new(expr));
+            return Expression::Unary(TokenType::operator(Operator::minus), Box::new(expr));
         }
         self.primary()
     }

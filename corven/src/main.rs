@@ -8,7 +8,7 @@ mod ast;
 
 use crate::parser::{Expression,Parser};
 
-use crate::lexer::{Scanner, TokenType, Token, Operation};
+use crate::lexer::{Scanner, TokenType, Token, Operator};
 
 
 
